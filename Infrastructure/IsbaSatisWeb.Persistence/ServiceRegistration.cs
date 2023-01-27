@@ -1,5 +1,7 @@
-﻿using IsbaSatisWeb.Infrastructure.Persistence;
+﻿using IsbaSatisWeb.Application.Repositories;
+using IsbaSatisWeb.Infrastructure.Persistence;
 using IsbaSatisWeb.Infrastructure.Persistence.Contexts;
+using IsbaSatisWeb.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -16,7 +18,24 @@ namespace IsbaSatisWeb.Infrastructure.Persistence
         {
             services.AddDbContext<IsbaSatisWebDbContext>(options =>
                     options.UseSqlServer(Configuration.ConnectionString));
-            //services.AddSingleton<IService,Service>();
+            services.AddScoped<ITanimRepository, TanimRepository>();
+            services.AddScoped<IStokHareketRepository, StokHareketRepository>();
+            services.AddScoped<IStokRepository, StokRepository>();
+            services.AddScoped<ISirketBilgiRepository, SirketBilgiRepository>();
+            services.AddScoped<IPersonelHareketRepository, PersonelHareketRepository>();
+            services.AddScoped<IPersonelRepository, PersonelRepository>();
+            services.AddScoped<IOdemeTuruRepository, OdemeTuruRepository>();
+            services.AddScoped<IKodRepository, KodRepository>();
+            services.AddScoped<IKasaHareketRepository, KasaHareketRepository>();
+            services.AddScoped<IKasaRepository, KasaRepository>();
+            services.AddScoped<IIndirimRepository, IndirimRepository>();
+            services.AddScoped<IHizliSatisGrupRepository, HizliSatisGrupRepository>();
+            services.AddScoped<IHizliSatisRepository, HizliSatisRepository>();
+            services.AddScoped<IFisRepository, FisRepository>();
+            services.AddScoped<IDepoRepository, DepoRepository>();
+            services.AddScoped<ICariRepository, CariRepository>();
+            services.AddScoped<IBankaHareketRepository, BankaHareketRepository>();
+            services.AddScoped<IBankaRepository, BankaRepository>();
         }
     }
 }

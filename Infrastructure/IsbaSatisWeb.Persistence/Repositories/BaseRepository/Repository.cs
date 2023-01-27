@@ -1,4 +1,4 @@
-﻿using IsbaSatisWeb.Application.Repositories;
+﻿using IsbaSatisWeb.Application.Repositories.IBaseRepository;
 using IsbaSatisWeb.Core.Domain.Entities.Common;
 using IsbaSatisWeb.Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +10,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IsbaSatisWeb.Persistence.Repositories
+namespace IsbaSatisWeb.Persistence.Repositories.BaseRepository
 {
     public class Repository<T> : IRepository<T> where T : BaseEntity
     {
@@ -57,17 +57,36 @@ namespace IsbaSatisWeb.Persistence.Repositories
             EntityEntry entityEntry = Table.Update(entity);
             return entityEntry.State == EntityState.Modified;
         }
-        public IQueryable<T> GetAll()
-       => Table;
+        public IQueryable<T> GetAll(bool tracking = true)
+        {
+            var query = Table.AsQueryable();
+            if (!tracking)
+                query = query.AsNoTracking();
+            return query;
+        }
+        public async Task<T> GetByIdAsync(string id, bool tracking = true)
+        {
+            var query = Table.AsQueryable();
+            if (!tracking)
+                query = query.AsNoTracking();
+            return await query.FirstOrDefaultAsync(c => c.Id == Guid.Parse(id));
+        }
 
-        public async Task<T> GetByIdAsync(string id)
-       => await Table.FirstOrDefaultAsync(c => c.Id == Guid.Parse(id));
+        public async Task<T> GetSingleAsync(Expression<Func<T, bool>> filter, bool tracking = true)
+        {
+            var query = Table.AsQueryable();
+            if(!tracking)
+                query = query.AsNoTracking();
+            return await query.FirstOrDefaultAsync(filter);
+        }
 
-        public async Task<T> GetSingleAsync(Expression<Func<T, bool>> filter)
-       => await Table.FirstOrDefaultAsync(filter);
-
-        public IQueryable<T> GetWhere(Expression<Func<T, bool>> filter)
-       => Table.Where(filter);
+        public IQueryable<T> GetWhere(Expression<Func<T, bool>> filter, bool tracking = true)
+        {
+            var query = Table.Where(filter);
+            if (!tracking)
+                query = query.AsNoTracking();
+            return query;
+        }
 
         public async Task<int> SaveAsync()
            => await _context.SaveChangesAsync();
