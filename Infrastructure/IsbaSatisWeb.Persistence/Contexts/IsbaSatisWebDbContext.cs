@@ -34,6 +34,19 @@ namespace IsbaSatisWeb.Infrastructure.Persistence.Contexts
         public DbSet<BankaHareket> BankaHareketleri { get; set; }
         public DbSet<SirketBilgi> SirketBilgileri { get; set; }
 
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+          var datas=  ChangeTracker.Entries<BaseEntity>();
+            foreach (var data in datas)
+            {
+            _=   data.State switch
+                {
+                    EntityState.Added => data.Entity.EklenmeTarihi = DateTime.Now,
+                    EntityState.Modified=>data.Entity.DuzenlenmeTarihi=DateTime.Now,
+                };
+            }
+            return await base.SaveChangesAsync(cancellationToken);
+        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
